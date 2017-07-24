@@ -967,17 +967,16 @@ to_json( const DTO & dto, bool pretty = false )
 	jout << dto;
 
 	rapidjson::StringBuffer buffer;
-	if (!pretty) {
+
+	if ( !pretty ) {
 		rapidjson::Writer< rapidjson::StringBuffer > writer( buffer );
 		output_doc.Accept( writer );
-
-		return buffer.GetString();
 	} else {
 		rapidjson::PrettyWriter< rapidjson::StringBuffer > writer( buffer );
 		output_doc.Accept( writer );
-
-		return buffer.GetString();
 	}
+
+	return buffer.GetString();
 }
 
 inline void
@@ -1018,7 +1017,7 @@ from_json( const std::string & json )
 
 template< typename TYPE >
 void
-to_stream( std::ostream & to, const TYPE & type )
+to_stream( std::ostream & to, const TYPE & type, bool pretty = false )
 {
 	rapidjson::Document output_doc;
 	json_dto::json_output_t jout{
@@ -1027,8 +1026,14 @@ to_stream( std::ostream & to, const TYPE & type )
 	jout << type;
 
 	rapidjson::OStreamWrapper wrapper{ to };
-	rapidjson::Writer< rapidjson::OStreamWrapper > writer{ wrapper };
-	output_doc.Accept( writer );
+
+	if ( !pretty ) {
+		rapidjson::Writer< rapidjson::OStreamWrapper > writer{ wrapper };
+		output_doc.Accept( writer );
+	} else {
+		rapidjson::PrettyWriter< rapidjson::OStreamWrapper > writer{ wrapper };
+		output_doc.Accept( writer );
+	}
 }
 
 template< typename TYPE, unsigned RAPIDJSON_PARSEFLAGS = rapidjson::kParseDefaultFlags >
